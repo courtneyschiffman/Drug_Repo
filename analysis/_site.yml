@@ -5,6 +5,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "Simulations"
+      href: Simulations.html
+    - text: "Results"
+      href: Results.html      
     - text: "About"
       href: about.html
     - text: "License"
@@ -16,5 +20,5 @@ output:
   workflowr::wflow_html:
     toc: true
     toc_float: true
-    theme: cosmo
+    theme: lumen
     highlight: textmate
