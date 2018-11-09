@@ -6,4 +6,4 @@ output:
     toc: false
 ---
 
-Welcome to my research website.
+Welcome to the research website of Amanda Mok and Courtney Schiffman. Here you will find a description of our project to re-work drug repositioning as described by Sirota et al. in "Discovery and preclinical validation of drug indications using compendia of public gene expression data", Sci Transl Med., 2011.

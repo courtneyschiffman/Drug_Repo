@@ -5,4 +5,6 @@ output:
     toc: false
 ---
 
-Describe your project.
+Amanda Mok is a PhD student in computational biology at UC Berkeley...
+
+Courtney Schiffman is a PhD student in Biostatistics, with a designated emphasis in computational biology at UC Berkeley.
