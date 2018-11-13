@@ -6,4 +6,6 @@ output:
     toc: false
 ---
 
-Welcome to the research website of Amanda Mok and Courtney Schiffman. Here you will find a description of our project to re-work drug repositioning as described by Sirota et al. in "Discovery and preclinical validation of drug indications using compendia of public gene expression data", Sci Transl Med., 2011.
+Welcome to the research website of Amanda Mok and Courtney Schiffman. Here you will find a description of our project to re-work drug repositioning as described by Sirota et al. in ["Discovery and preclinical validation of drug indications using compendia of public gene expression data"](https://www.ncbi.nlm.nih.gov/pubmed/21849665).
+
+Our aim is to improve upon the drug-disease similarity score used by Sirota et al. We compare the performance of their similarity score to Spearman rank correlation coefficient and the proportion of reproducible genes as estimated by the irreproducible discovery rate (IDR) method of [Li et al](https://arxiv.org/abs/1110.4705). We compare these scores using multiple simulation studies that vary in the percentage of overlapping significant genes in the drug/disease signatures and the percentage of significant genes in each signature. In addition to testing the performance of various similarity scores, we also increase the number of permutaions in the permutation tests to assess the significance of each simulated drug/disease pair.
