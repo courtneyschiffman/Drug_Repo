@@ -1,5 +1,6 @@
 
-simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(5), mu2=log(5), df1=49, df2=49) {
+simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(10), mu2=log(10), df1=49, df2=49,
+                         frac1=0.5, frac2=0.5, frac3=0.5) {
   ### simulates pair of vectors of t-statistics representing 2 gene expression signatures
   ### returns: data.frame with x = signature1 (disease) and y=signature2 (drug)
   # p1: fraction of signature1 that is differentially expressed
@@ -10,23 +11,32 @@ simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(5), mu2=log(5), df1=4
   # mu2: mean of alternative hypothesis for signature2
   # df1: degrees of freedom for signature1
   # df2: digrees of freedom for signature2
+  # frac1: fraction of upregulated DE genes in signature 1
+  # frac2: fraction of upregulated DE genes in signature 2
+  # frac3: fraction of upregulated DE genes in signatures 1 and 2
   nDE.1 <- round(nGenes*p1)
+  nDE.1.up <- round(nDE.1*frac1)
   nDE.2 <- round(nGenes*p2)
+  nDE.2.up <- round(nDE.2*frac2)
   nDE.1and2 <- round(nDE.2*p3)
-  sig1 <- c(rt(nDE.1, df1)+mu1, # DE genes
+  nDE.1and2.up <- round(nDE.1and2*frac3)
+  sig1 <- c(rt(nDE.1.up, df1)+mu1, # upregulated in sig1
+            rt(nDE.1-nDE.1.up, df1)-mu2, # downregualted in sig1
             rt(nGenes-nDE.1, df1)) # non-DE genes
-  sig2 <- c(rt(nDE.1and2, df2)+mu2, # genes that are DE in sig1 and sig2
-            rt(nDE.1-nDE.1and2, df2), # genes that are only DE in sig1
-            rt(nDE.2-nDE.1and2, df2) + mu2, # genes that are only DE in sig2
-            rt(nGenes-nDE.1-nDE.2+nDE.1and2, df2)) # non-DE genes
+  sig2 <- c(rt(nDE.1and2.up, df2)+mu2, # upregulated in sig1 and sig2
+            rt(nDE.1.up-nDE.1and2.up, df2), # upregulated in only sig1
+            rt(nDE.1and2-nDE.1and2.up, df2)-mu2, # downregulated in sig1 and sig2
+            rt(nDE.1-nDE.1and2-(nDE.1.up-nDE.1and2.up), df2), # downregulated DE in only sig2
+            rt(nDE.2.up-nDE.1and2.up, df2)+mu2, # upregulated in only sig2
+            rt((nDE.2-nDE.2.up)-(nDE.1and2-nDE.1and2.up), df2)-mu2, # downregulated in only sig2
+            rt((nGenes-nDE.1)-(nDE.2-nDE.1and2), df2)) # non-DE genes
   return(data.frame(x=sig1, y=sig2))
 }
 
 ## example
-# tmp <- simulateData(p1=0.05, p2=0.05, p3=0)
+# tmp <- simulateData(p1=0.2, p2=0.05, p3=0)
 # par(mfrow=c(2,1))
-# plot(density(tmp$sig1), xlim=c(min(tmp), max(tmp)), main="signature1")
-# abline(v=mean(tmp$sig1), col="red")
-# plot(density(tmp$sig2), xlim=c(min(tmp), max(tmp)), main="signature2")
-# abline(v=mean(tmp$sig2), col="red")
-#
+# plot(density(tmp$x), xlim=c(min(tmp), max(tmp)), main="signature1")
+# abline(v=mean(tmp$x), col="red")
+# plot(density(tmp$y), xlim=c(min(tmp), max(tmp)), main="signature2")
+# abline(v=mean(tmp$y), col="red")

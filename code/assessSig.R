@@ -1,5 +1,5 @@
 
-assessSig <- function(expDat, simFuns, nPerm, df.x) {
+assessSig <- function(expDat, simFuns, nPerm, deg) {
   ###  computes similarity scores for nPerm permutations
   # expDat <- expression data: data.frame with x = signature1 (disease) and y=signature2 (drug)
   # simFuns: vector of similarity functions
@@ -10,7 +10,7 @@ assessSig <- function(expDat, simFuns, nPerm, df.x) {
                                  function(fun) {
                                    do.call(fun, args=list(x=sample(expDat$x),
                                                           y=expDat$y,
-                                                          df.x=df.x))
+                                                          deg=deg))
                                  })
                         })
   names(permResults) <- simFuns
