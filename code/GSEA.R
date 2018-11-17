@@ -6,11 +6,11 @@
 # y <- c(x[1:8000],rt(8000,df=49))
 
 
-gsea <- function(x,y,deg){
+gsea <- function(x,y,df.x){
   names(y) <- as.character(1:length(y))
   names(x) <- as.character(1:length(x))
   y <- rank(-y)
-  xpvals <- 2*(1-pt(abs(x),df=deg,lower.tail = T))
+  xpvals <- 2*(1-pt(abs(x),df=df.x,lower.tail = T))
   xqvals <- qvalue(xpvals)$qvalues
   xup <- sort(x[x>=0 & xqvals <= .05],decreasing = T)
   xdown <- sort(x[x<0 & xqvals <= .05],decreasing = T)
