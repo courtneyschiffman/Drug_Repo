@@ -37,5 +37,12 @@ tmp <- lapply(dat[[1]],
               function(x) {
                 assessSig(x, simFuns=simFuns, nPerm=2, deg=49)
               })
-tmp <- dat[[1]][[1]]
-gsea(tmp$x, tmp$y, deg=49)
+tmp <- lapply(1:length(dat[[1]]),
+              function(i) {
+                print(i)
+                do.call("gsea", args=list(x=dat[[1]][[i]]$x,
+                                          y=dat[[1]][[i]]$y,
+                                          deg=49))
+              })
+gsea(dat[[1]][[10]]$x, dat[[1]][[10]]$y, deg=49)
+tmp <- dat[[1]][[10]]
