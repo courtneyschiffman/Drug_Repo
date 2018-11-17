@@ -23,10 +23,10 @@ simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(5), mu2=log(5), df1=4
 }
 
 ## example
-tmp <- simulateData(p1=0.05, p2=0.05, p3=0)
-par(mfrow=c(2,1))
-plot(density(tmp$sig1), xlim=c(min(tmp), max(tmp)), main="signature1")
-abline(v=mean(tmp$sig1), col="red")
-plot(density(tmp$sig2), xlim=c(min(tmp), max(tmp)), main="signature2")
-abline(v=mean(tmp$sig2), col="red")
-
+# tmp <- simulateData(p1=0.05, p2=0.05, p3=0)
+# par(mfrow=c(2,1))
+# plot(density(tmp$sig1), xlim=c(min(tmp), max(tmp)), main="signature1")
+# abline(v=mean(tmp$sig1), col="red")
+# plot(density(tmp$sig2), xlim=c(min(tmp), max(tmp)), main="signature2")
+# abline(v=mean(tmp$sig2), col="red")
+#

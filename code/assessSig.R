@@ -18,16 +18,16 @@ assessSig <- function(expDat, simFuns, nPerm, df.x) {
 }
 
 ## example
-simDat <- data.frame(x=rt(20000, df=49)+log(5), y=rt(20000, df=49))
-spearman <- function(x, y, df.x) {
-  cor(x, y, method="spearman")
-}
-trunSpearman <- function(x, y, df.x) {
-  x.pvalues <- pt(x, df=df.x)
-  x.pvalues[x.pvalues>0.5] <- 1-x.pvalues[x.pvalues>0.5]
-  x.pvalues <- 2*x.pvalues
-  use <- p.adjust(x.pvalues, method="fdr")<0.05
-  cor(x[use], y[use], method="spearman")
-}
-simFuns <- c("spearman", "trunSpearman")
-tmp <- assessSig(simDat, simFuns, 10, df.x=49)
+# simDat <- data.frame(x=rt(20000, df=49)+log(5), y=rt(20000, df=49))
+# spearman <- function(x, y, df.x) {
+#   cor(x, y, method="spearman")
+# }
+# trunSpearman <- function(x, y, df.x) {
+#   x.pvalues <- pt(x, df=df.x)
+#   x.pvalues[x.pvalues>0.5] <- 1-x.pvalues[x.pvalues>0.5]
+#   x.pvalues <- 2*x.pvalues
+#   use <- p.adjust(x.pvalues, method="fdr")<0.05
+#   cor(x[use], y[use], method="spearman")
+# }
+# simFuns <- c("spearman", "trunSpearman")
+# tmp <- assessSig(simDat, simFuns, 10, df.x=49)
