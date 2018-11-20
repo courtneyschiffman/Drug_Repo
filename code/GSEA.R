@@ -44,7 +44,7 @@ gsea <- function(x,y,deg){
 x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
 y <- c(x[1:8000],rt(8000,df=49))
 
-gsea(x,y,49)
+gsea(x,sample(y),49)
 
 x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
 y <- c(-x[1:8000],rt(8000,df=49))
