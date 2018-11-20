@@ -1,11 +1,11 @@
 
 ### SOME EXAMPLES
 
-x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
-y <- c(-x[1:8000],rt(8000,df=49))
-
-x <- c(rt(16000,df=49))
-y <- c(rt(16000,df=49))
+# x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
+# y <- c(-x[1:8000],rt(8000,df=49))
+#
+# x <- c(rt(16000,df=49))
+# y <- c(rt(16000,df=49))
 
 
 ## x and y are your vectors of t-statistics
@@ -24,15 +24,15 @@ IDR.func <- function(x,y,deg=49,mu=6,sigma=1.5,rho=.6,p=.2){
     y.pval <- pt(y[i],df=deg,lower.tail = which.tail[-m])
     return(c(x.pval,y.pval))
   }
-  
+
   new.pvals <- sapply(1:length(x),pval.func)
   new.pvals <- t(-log(new.pvals))
-  my.idr <- est.IDR(new.pvals,mu=mu,sigma=sigma,rho=rho,p=p)$para$rho
+  my.idr <- idr::est.IDR(new.pvals,mu=mu,sigma=sigma,rho=rho,p=p)$para$rho
   return(my.idr)
 }
 
-IDR.func(x,y)
-
-IDR.func(sample(x),y)
-
-plot(rank(new.pvals[,1]),rank(new.pvals[,2]))
+# IDR.func(x,y)
+#
+# IDR.func(sample(x),y)
+#
+# plot(rank(new.pvals[,1]),rank(new.pvals[,2]))
