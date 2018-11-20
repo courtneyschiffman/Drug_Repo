@@ -1,5 +1,5 @@
 
-simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(10), mu2=log(10), df1=49, df2=49,
+simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(5), mu2=log(5), df1=49, df2=49,
                          frac1=0.5, frac2=0.5, frac3=0.5) {
   ### simulates pair of vectors of t-statistics representing 2 gene expression signatures
   ### returns: data.frame with x = signature1 (disease) and y=signature2 (drug)
@@ -20,9 +20,17 @@ simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(10), mu2=log(10), df1
   nDE.2.up <- round(nDE.2*frac2)
   nDE.1and2 <- round(nDE.2*p3)
   nDE.1and2.up <- round(nDE.1and2*frac3)
-  sig1 <- c(rt(nDE.1.up, df1)+mu1, # upregulated in sig1
-            rt(nDE.1-nDE.1.up, df1)-mu2, # downregualted in sig1
-            rt(nGenes-nDE.1, df1)) # non-DE genes
+  checkDE <- T
+  while(checkDE) {
+    sig1 <- c(rt(nDE.1.up, df1)+mu1, # upregulated in sig1
+              rt(nDE.1-nDE.1.up, df1)-mu2, # downregualted in sig1
+              rt(nGenes-nDE.1, df1)) # non-DE genes
+    pvals <- 2*pt(abs(sig1), df=df1, lower.tail=F)
+    qvals <- p.adjust(pvals, method="fdr")
+    sig1.up <- sort(sig1[sig1>=0 & qvals <= .05],decreasing = T)
+    sig1.down <- sort(sig1[sig1<0 & qvals <= .05],decreasing = T)
+    checkDE <- !(length(sig1.up)>0)&(length(sig1.down)>0)
+  }
   sig2 <- c(rt(nDE.1and2.up, df2)+mu2, # upregulated in sig1 and sig2
             rt(nDE.1.up-nDE.1and2.up, df2), # upregulated in only sig1
             rt(nDE.1and2-nDE.1and2.up, df2)-mu2, # downregulated in sig1 and sig2
@@ -40,3 +48,6 @@ simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(10), mu2=log(10), df1
 # abline(v=mean(tmp$x), col="red")
 # plot(density(tmp$y), xlim=c(min(tmp), max(tmp)), main="signature2")
 # abline(v=mean(tmp$y), col="red")
+# pvalues <- p.adjust(2*pt(abs(tmp$x), df=49, lower.tail=F), method="fdr")
+# sum(tmp$x<0&pvalues<=0.05)
+# sum(tmp$x>0&pvalues<=0.05)
