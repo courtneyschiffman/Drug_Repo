@@ -1,5 +1,5 @@
 
-simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(10), mu2=log(10), df1=49, df2=49,
+simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(8), mu2=log(8), df1=49, df2=49,
                          frac1=0.5, frac2=0.5, frac3=0.5) {
   ### simulates pair of vectors of t-statistics representing 2 gene expression signatures
   ### returns: data.frame with x = signature1 (disease) and y=signature2 (drug)
@@ -41,12 +41,13 @@ simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(10), mu2=log(10), df1
 }
 
 ## example
-# tmp <- simulateData(p1=0.2, p2=0.05, p3=0)
+tmp <- simulateData(p1=0.2, p2=0.05, p3=0)
+pvalues <- p.adjust(2*pt(abs(tmp$x), df=49, lower.tail=F), method="fdr")
+sum(tmp$x<0&pvalues<=0.05)
+sum(tmp$x>0&pvalues<=0.05)
 # par(mfrow=c(2,1))
 # plot(density(tmp$x), xlim=c(min(tmp), max(tmp)), main="signature1")
 # abline(v=mean(tmp$x), col="red")
 # plot(density(tmp$y), xlim=c(min(tmp), max(tmp)), main="signature2")
 # abline(v=mean(tmp$y), col="red")
-# pvalues <- p.adjust(2*pt(abs(tmp$x), df=49, lower.tail=F), method="fdr")
-# sum(tmp$x<0&pvalues<=0.05)
-# sum(tmp$x>0&pvalues<=0.05)
+

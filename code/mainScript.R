@@ -1,16 +1,19 @@
 rm(list=ls())
 
+# setwd("") ## set working directory to git repo
+
 # check installed packages
 libs <- c("idr",
+          "parallel",
           "snow")
 notInstalled <- libs[!libs %in% rownames(installed.packages())]
 if(length(notInstalled)>0) {install.packages(notInstalled)}
 require(snow)
 
-nSim <- 2 # number of simulations to perform
-nPerm <- 2 # number of permutations to perform
+nSim <- 100 # number of simulations to perform
+nPerm <- 1000 # number of permutations to perform
 deg <- 49 # degrees of freedom to simulate from
-nCores <- 2 # number of clusters to use for makeCluster()
+nCores <- parallel::detectCores() # number of clusters to use for makeCluster()
 
 ## source script files
 scriptFiles <- grep(".R", list.files(path="./code"), value=T)
@@ -33,7 +36,7 @@ dat <- lapply(1:nrow(params),
                 return(paramSims)
               })
 names(dat) <- params_names
-# save(dat, file="./data/simulations.Rda")
+save(dat, file="./data/simulations.Rda")
 
 ## assess significance
 simFuns <- c("gsea", "IDR.func", "spearman", "trunSpearman")
@@ -52,4 +55,4 @@ dat_permutations <- parLapply(cl, dat,
                               })
 stopCluster(cl)
 names(dat_permutations) <- params_names
-# save(dat_permutations, file="./data/permutations.Rda)
+save(dat_permutations, file="./data/permutations.Rda")
