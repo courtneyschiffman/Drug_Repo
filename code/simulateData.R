@@ -41,10 +41,10 @@ simulateData <- function(p1, p2, p3, nGenes=20000, mu1=log(8), mu2=log(8), df1=4
 }
 
 ## example
-tmp <- simulateData(p1=0.2, p2=0.05, p3=0)
-pvalues <- p.adjust(2*pt(abs(tmp$x), df=49, lower.tail=F), method="fdr")
-sum(tmp$x<0&pvalues<=0.05)
-sum(tmp$x>0&pvalues<=0.05)
+# tmp <- simulateData(p1=0.2, p2=0.05, p3=0)
+# pvalues <- p.adjust(2*pt(abs(tmp$x), df=49, lower.tail=F), method="fdr")
+# sum(tmp$x<0&pvalues<=0.05)
+# sum(tmp$x>0&pvalues<=0.05)
 # par(mfrow=c(2,1))
 # plot(density(tmp$x), xlim=c(min(tmp), max(tmp)), main="signature1")
 # abline(v=mean(tmp$x), col="red")

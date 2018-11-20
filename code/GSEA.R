@@ -40,27 +40,6 @@ gsea <- function(x,y,deg){
   return(dds)
 }
 
-<<<<<<< HEAD
-x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
-y <- c(x[1:8000],rt(8000,df=49))
-
-gsea(x,sample(y),49)
-
-x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
-y <- c(-x[1:8000],rt(8000,df=49))
-gsea(x,y,49)
-
-y <- rt(20000,df=49) + 4
-x <- rt(20000,df=49) + 4
-
-gsea(x,y,49)
-
-y <- rt(20000,df=49) + 4
-x <- -y
-
-gsea(x,y,49)
-
-=======
 # x <- c(rt(4000,df=49)+4,rt(4000,df=49)-4,rt(8000,df=49))
 # y <- c(x[1:8000],rt(8000,df=49))
 #
@@ -80,5 +59,3 @@ gsea(x,y,49)
 #
 # gsea(x,y,49)
 #
->>>>>>> master
-
