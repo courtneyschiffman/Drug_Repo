@@ -27,7 +27,7 @@ IDR.func <- function(x,y,deg=49,mu=6,sigma=1.5,rho=.6,p=.2){
 
   new.pvals <- sapply(1:length(x),pval.func)
   new.pvals <- t(-log(new.pvals))
-  my.idr <- est.IDR(new.pvals,mu=mu,sigma=sigma,rho=rho,p=p)$para$rho
+  my.idr <- idr::est.IDR(new.pvals,mu=mu,sigma=sigma,rho=rho,p=p)$para$rho
   return(my.idr)
 }
 

@@ -1,5 +1,16 @@
-nSim <- 100 # number of simulations to perform
-nPerm <- 1000 # number of permutations to perform
+rm(list=ls())
+
+# check installed packages
+libs <- c("idr",
+          "snow")
+notInstalled <- libs[!libs %in% rownames(installed.packages())]
+if(length(notInstalled)>0) {install.packages(notInstalled)}
+require(snow)
+
+nSim <- 2 # number of simulations to perform
+nPerm <- 2 # number of permutations to perform
+deg <- 49 # degrees of freedom to simulate from
+nCores <- 2 # number of clusters to use for makeCluster()
 
 ## source script files
 scriptFiles <- grep(".R", list.files(path="./code"), value=T)
@@ -14,35 +25,31 @@ params_names <- apply(params, 1, function(x) paste("p1",x[1],"p2",x[2],"p3",x[3]
 set.seed(1)
 dat <- lapply(1:nrow(params),
               function(i) {
-                print(paste0("simulating ",params_names[i]))
-                lapply(1:nSim, function(x) {
+                print(paste0("simulating ", nSim, " simulations of ", params_names[i]))
+                paramSims <- lapply(1:nSim, function(x) {
                   simulateData(p1=params[i,1], p2=params[i,2], p3=params[i,3])
                 })
+                names(paramSims) <- paste(params_names[i], "sim", 1:nSim, sep="_")
+                return(paramSims)
               })
 names(dat) <- params_names
-# save(dat, file="./data/simulatedData.Rda")
+# save(dat, file="./data/simulations.Rda")
 
-## perform permutations
-simFuns <- c("gsea", "spearman", "trunSpearman")
-# simFuns <- c("gsea", "IDR.func", "spearman", "trunSpearman")
-dat_permutations <- lapply(dat,
-                           function(paramSet) {
-                             lapply(paramSet,
-                                    function(perm) {
-                                      assessSig(perm, simFuns=simFuns, nPerm=2, deg=49)
-                                    })
-                           })
-
-tmp <- lapply(dat[[1]],
-              function(x) {
-                assessSig(x, simFuns=simFuns, nPerm=2, deg=49)
-              })
-tmp <- lapply(1:length(dat[[1]]),
-              function(i) {
-                print(i)
-                do.call("gsea", args=list(x=dat[[1]][[i]]$x,
-                                          y=dat[[1]][[i]]$y,
-                                          deg=49))
-              })
-gsea(dat[[1]][[10]]$x, dat[[1]][[10]]$y, deg=49)
-tmp <- dat[[1]][[10]]
+## assess significance
+simFuns <- c("gsea", "IDR.func", "spearman", "trunSpearman")
+simFunsDir <- c(F, T, F, F)
+cl <- makeCluster(getOption("cl.cores", nCores))
+clusterExport(cl, list=ls())
+dat_permutations <- parLapply(cl, dat,
+                              function(paramSims) {
+                                permResults <- lapply(paramSims,
+                                                        function(paramSim) {
+                                                          assessSig(paramSim, simFuns=simFuns,
+                                                                    simFunsDir=simFunsDir, nPerm=nPerm)
+                                                        })
+                                names(permResults) <- names(paramSims)
+                                return(permResults)
+                              })
+stopCluster(cl)
+names(dat_permutations) <- params_names
+# save(dat_permutations, file="./data/permutations.Rda)
