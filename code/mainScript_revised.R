@@ -25,7 +25,18 @@ params <- expand.grid(p1=c(0.05,0.20),
                       p2=0.05,
                       p3=c(0,0.25,0.5,0.75,1))
 params_names <- apply(params, 1, function(x) paste("p1",x[1],"p2",x[2],"p3",x[3], sep="_"))
-load(file="./data/simulations.Rda")
+# load(file="./data/simulations.Rda")
+set.seed(1)
+dat <- lapply(1:nrow(params),
+              function(i) {
+                print(paste0("simulating ", nSim, " simulations of ", params_names[i]))
+                paramSims <- lapply(1:nSim, function(x) {
+                  simulateData(p1=params[i,1], p2=params[i,2], p3=params[i,3])
+                })
+                names(paramSims) <- paste(params_names[i], "sim", 1:nSim, sep="_")
+                return(paramSims)
+              })
+names(dat) <- params_names
 
 ## assess significance
 simFuns <- c("gsea", "IDR.func", "spearman", "trunSpearman")
@@ -39,6 +50,6 @@ for(i in 1:length(params_names)) {
                                       function(paramSim) {
                                         assessSig(paramSim, simFuns=simFuns, simFunsDir=simFunsDir, nPerm=nPerm)
                                       }))})
-  save(list=c(params_names[i], file=paste0("./data/", params_names[1])))
+  save(list=c(params_names[i]), file=paste0("./data/", params_names[i], ".Rda"))
 }
 stopCluster(cl)
