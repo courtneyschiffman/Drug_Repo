@@ -12,7 +12,7 @@ library(doParallel)
 library(foreach)
 library(iterators)
 
-nSim <- 5 # number of simulations to perform
+nSim <- 1 # number of simulations to perform
 nPerm <- 1000 # number of permutations to perform
 deg <- 49 # degrees of freedom to simulate from
 nCores <- parallel::detectCores() # number of clusters to use for makeCluster()
@@ -23,9 +23,12 @@ scriptFiles <- grep("main", scriptFiles, invert=T, value=T)
 sapply(scriptFiles, function(x) source(paste0("./code/",x)))
 
 ## simulate data
-params <- expand.grid(p1=c(0.05,0.20),
+# params <- expand.grid(p1=c(0.05,0.20),
+#                       p2=0.05,
+#                       p3=c(0,0.25,0.5,0.75,1))
+params <- expand.grid(p1=0.2,
                       p2=0.05,
-                      p3=c(0,0.25,0.5,0.75,1))
+                      p3=c(0,0.5,1))
 params_names <- apply(params, 1, function(x) paste("p1",x[1],"p2",x[2],"p3",x[3], sep="_"))
 set.seed(1)
 dat <- lapply(1:nrow(params),
@@ -65,3 +68,7 @@ for(i in 1:length(params_names)) {
   wflow_git_push()
 }
 stopImplicitCluster()
+
+save(dat, file="./data/simData.Rda")
+wflow_publish(files="./data/simData.Rda")
+wflow_git_push()
