@@ -11,15 +11,13 @@ assessSig <- function(expDat, simFuns, simFunsDir, nPerm, deg=49) {
                                               y=expDat$y,
                                               deg=deg))
                      })
-  permStats <- t(sapply(1:nPerm,
-                        function(x) {
-                          sapply(simFuns,
-                                 function(fun) {
-                                   do.call(fun, args=list(x=sample(expDat$x),
-                                                          y=expDat$y,
-                                                          deg=deg))
-                                 })
-                        }))
+  permStats <- foreach(iterators::icount(nPerm), .combine='rbind') %dopar%
+    sapply(simFuns,
+           function(fun) {
+             do.call(fun, args=list(x=sample(expDat$x),
+                                    y=expDat$y,
+                                    deg=deg))
+           })
   pvalues <- sapply(1:length(simFuns),
                     function(i) ifelse(simFunsDir[i],
                                        mean(permStats[,i]>simStats[i]),
@@ -29,7 +27,7 @@ assessSig <- function(expDat, simFuns, simFunsDir, nPerm, deg=49) {
               pvalues=pvalues))
 }
 
-# example
+## example
 # simDat <- data.frame(x=rt(20000, df=49)+log(5), y=rt(20000, df=49))
 # spearman <- function(x, y, deg) {
 #   cor(x, y, method="spearman")
@@ -44,3 +42,16 @@ assessSig <- function(expDat, simFuns, simFunsDir, nPerm, deg=49) {
 # simFuns <- c("spearman", "trunSpearman")
 # simFunsDir <- c(F, F)
 # tmp <- assessSig(simDat, simFuns, simFunsDir, nPerm=10, deg=49)
+
+## test parallelization
+# nCores <- parallel::detectCores()
+# registerDoParallel(nCores)
+# system.time({tmp <- foreach(iterators::icount(100), .combine='rbind') %dopar%
+#   sapply(simFuns,
+#          function(fun) {
+#            do.call(fun, args=list(x=sample(dat[[1]][[1]]$x),
+#                                   y=dat[[1]][[1]]$y,
+#                                   deg=deg))
+#          })})
+# system.time({ tmp <- assessSig(dat[[1]][[1]], simFuns, simFunsDir, nPerm=10, deg=49) })
+# stopImplicitCluster()

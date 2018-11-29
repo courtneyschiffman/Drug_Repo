@@ -52,16 +52,16 @@ print(paste("expected time per simulation:", timePerSim, "min"))
 print(paste("expected time per parameter set:", round(timePerSim*nSim/60,2), "hr"))
 print(paste("expected total time for", length(params_names), "parameter sets:",
             round(timePerSim*nSim/60*length(params_names),2), "hr"))
-for(i in 1:length(params_names)) {
-  print(paste("assessing for", params_names[i]))
-  tmp <- as.list(rep(NA, length(dat[[i]])))
-  for(j in 1:nSim) {
-    print(paste("permuting for simulation", j, "of", nSim))
-    tmp[[j]] <- assessSig(paramSim, simFuns=simFuns, simFunsDir=simFunsDir, nPerm=nPerm)
-  }
-  assign(params_names[i], value=tmp)
-  save(list=c(params_names[i]), file=paste0("./data/", params_names[i], ".Rda"))
-  wflow_publish(files=paste0("./data/", params_names[i], ".Rda"))
-  wflow_git_push()
-}
+# for(i in 1:length(params_names)) {
+#   print(paste("assessing for", params_names[i]))
+#   tmp <- as.list(rep(NA, length(dat[[i]])))
+#   for(j in 1:nSim) {
+#     print(paste("permuting for simulation", j, "of", nSim))
+#     tmp[[j]] <- assessSig(paramSim, simFuns=simFuns, simFunsDir=simFunsDir, nPerm=nPerm)
+#   }
+#   assign(params_names[i], value=tmp)
+#   save(list=c(params_names[i]), file=paste0("./data/", params_names[i], ".Rda"))
+#   wflow_publish(files=paste0("./data/", params_names[i], ".Rda"))
+#   wflow_git_push()
+# }
 stopImplicitCluster()
