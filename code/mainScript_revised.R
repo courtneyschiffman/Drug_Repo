@@ -41,6 +41,9 @@ names(dat) <- params_names
 ## assess significance
 simFuns <- c("gsea", "IDR.func", "spearman", "trunSpearman")
 simFunsDir <- c(F, T, F, F)
+# stupidity check
+system.time({assessSig(dat[[1]][[1]], simFuns=simFuns, simFunsDir=simFunsDir, nPerm=5)})
+# initiate cluster
 cl <- makeCluster(getOption("cl.cores", nCores))
 clusterExport(cl, list=ls())
 for(i in 1:length(params_names)) {

@@ -5,7 +5,6 @@ assessSig <- function(expDat, simFuns, simFunsDir, nPerm, deg=49) {
   # simFuns: vector of similarity functions
   # simFunsDir: logical vector of whether more positive values mean better profile matching
   # nPerm: number of permutations
-  browser()
   simStats <- sapply(simFuns,
                      function(fun) {
                        do.call(fun, args=list(x=expDat$x,
