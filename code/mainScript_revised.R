@@ -54,5 +54,7 @@ for(i in 1:length(params_names)) {
                                         assessSig(paramSim, simFuns=simFuns, simFunsDir=simFunsDir, nPerm=nPerm)
                                       }))})
   save(list=c(params_names[i]), file=paste0("./data/", params_names[i], ".Rda"))
+  wflow_publish(files=paste0("./data/", params_names[i], ".Rda"))
+  wflow_git_push()
 }
 stopCluster(cl)
