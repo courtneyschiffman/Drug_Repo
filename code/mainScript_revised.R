@@ -12,10 +12,11 @@ library(doParallel)
 library(foreach)
 library(iterators)
 
-nSim <- 1 # number of simulations to perform
+nSim <- 2 # number of simulations to perform
 nPerm <- 1000 # number of permutations to perform
 deg <- 49 # degrees of freedom to simulate from
-nCores <- parallel::detectCores() # number of clusters to use for makeCluster()
+# nCores <- parallel::detectCores() # number of clusters to use for makeCluster()
+nCores <- 3
 
 ## source script files
 scriptFiles <- grep(".R", list.files(path="./code"), value=T)
@@ -41,6 +42,7 @@ dat <- lapply(1:nrow(params),
                 return(paramSims)
               })
 names(dat) <- params_names
+save(dat, file="./data/simData.Rda")
 
 ## assess significance
 simFuns <- c("gsea", "IDR.func", "spearman", "trunSpearman")
@@ -50,25 +52,24 @@ print(paste("utilizing", nCores, "cores"))
 registerDoParallel(nCores)
 tmp <- system.time({assessSig(dat[[1]][[1]], simFuns=simFuns, simFunsDir=simFunsDir, nPerm=5)})
 timePerSim <- round(tmp[3]*nPerm/5/60,2)
-print(paste("time for 5 permutations:", tmp[3], "sec"))
+print(paste("time for 15 permutations:", tmp[3], "sec"))
 print(paste("expected time per simulation:", timePerSim, "min"))
 print(paste("expected time per parameter set:", round(timePerSim*nSim/60,2), "hr"))
 print(paste("expected total time for", length(params_names), "parameter sets:",
             round(timePerSim*nSim/60*length(params_names),2), "hr"))
-for(i in 1:length(params_names)) {
+for(i in 2:length(params_names)) {
   print(paste("assessing for", params_names[i]))
   tmp <- as.list(rep(NA, length(dat[[i]])))
   for(j in 1:nSim) {
     print(paste("permuting for simulation", j, "of", nSim))
-    tmp[[j]] <- assessSig(paramSim, simFuns=simFuns, simFunsDir=simFunsDir, nPerm=nPerm)
+    tmp[[j]] <- assessSig(dat[[i]][[j]], simFuns=simFuns, simFunsDir=simFunsDir, nPerm=nPerm)
   }
   assign(params_names[i], value=tmp)
   save(list=c(params_names[i]), file=paste0("./data/", params_names[i], ".Rda"))
-  wflow_publish(files=paste0("./data/", params_names[i], ".Rda"))
-  wflow_git_push()
+  # wflow_publish(files=paste0("./data/", params_names[i], ".Rda"))
+  # wflow_git_push()
 }
 stopImplicitCluster()
 
-save(dat, file="./data/simData.Rda")
-wflow_publish(files="./data/simData.Rda")
-wflow_git_push()
+# wflow_publish(files="./data/simData.Rda")
+# wflow_git_push()
