@@ -52,7 +52,7 @@ print(paste("utilizing", nCores, "cores"))
 registerDoParallel(nCores)
 simTime <- system.time({tmp <- assessSig(dat[[1]][[1]], simFuns=simFuns, simFunsDir=simFunsDir, nPerm=5)})
 timePerSim <- round(simTime[3]*nPerm/5/60,2)
-print(paste("time for 15 permutations:", round(simTime[3],2), "sec"))
+print(paste("time for 5 permutations:", round(simTime[3],2), "sec"))
 print(paste("expected time per simulation:", timePerSim, "min"))
 print(paste("expected time per parameter set:", round(timePerSim*nSim/60,2), "hr"))
 print(paste("expected total time for", length(params_names), "parameter sets:",
