@@ -1,41 +1,62 @@
 rm(list=ls())
 
 # load results files
-resultsFiles <- grep("p1", list.files("./data"), value=T)
+resultsFiles <- grep("noidr", list.files("./data"), value=T)
 for(x in resultsFiles) { load(paste0("./data/", x)) }
 
 plotResults <- function(permResults) {
+  require(ggplot2)
+  require(reshape)
+  require(gridExtra)
   nSim <- length(permResults)
-  nStats <- length(permResults[[1]]$simStats)
+  nPerm <- nrow(permResults[[1]]$permStats)
+  nStats <- ncol(permResults[[1]]$permStats)
   statsNames <- colnames(permResults[[1]]$permStats)
-  par(mfcol=c(nStats, nSim))
-  # compute xlim for plots
-  xMax <- apply(sapply(permResults,
-                       function(x) {
-                         apply(x$permStats, 2, max)
-                       }), 1, max)
-  xMin <- apply(sapply(permResults,
-                       function(x) {
-                         apply(x$permStats, 2, min)
-                       }), 1, min)
-  xLims <- matrix(NA, nrow=nStats, ncol=2)
-  simStats <- sapply(permResults, function(x) x$simStats)
-  for(i in 1:nStats) {
-    xLims[i,1] <- min(xMin[i], simStats[i,]) - 0.1
-    xLims[i,2] <- max(xMax[i], simStats[i,]) + 0.1
-  }
+  # compute average p-value over simulations
+  allPvalues <- as.data.frame(t(sapply(permResults, function(x) x$pvalues)))
+  colnames(allPvalues) <- statsNames
+  avgPvalues <- colMeans(allPvalues)
+  # collect stats over all simulations
+  allStats <- as.data.frame(t(sapply(permResults, function(x) x$simStats)))
+  colnames(allStats) <- paste0("simulation", statsNames)
+  # collect stats over all permutations
+  allPerms <- data.frame(matrix(NA, nrow=nSim*nPerm, ncol=nStats))
   for(i in 1:nSim) {
-    for(j in 1:nStats) {
-      hist(permResults[[i]]$permStats[,j],
-           breaks=seq(from=xLims[j,1], to=xLims[j,2], length.out=20),
-           main=paste0("simulation", i, ": ", statsNames[j]),
-           xlab=paste("p-value:", permResults[[i]]$pvalues[j]))
-      abline(v=permResults[[i]]$simStats[j], col="red")
-    }
+    allPerms[((i-1)*1000+1):(nPerm*i),] <- permResults[[i]]$permStats
   }
-  par(mfrow=c(1,1))
+  colnames(allPerms) <- paste0("permutation", statsNames)
+  # combine simulation and permutation stats
+  facetTitles <- paste0(statsNames, ", p=", avgPvalues)
+  names(facetTitles) <- statsNames
+  allDat <- rbind(melt(allPerms), melt(allStats))
+  allDat$stat <- sub("permutation", "", sub("simulation", "", allDat$variable))
+  allDat$stat <- facetTitles[allDat$stat]
+  allDat$type <- sub("gsea", "", sub("spearman", "", sub("trunSpearman", "", allDat$variable)))
+  # plot results
+  params <- unlist(strsplit(deparse(substitute(permResults)), split="_"))
+  # plotTitle <- paste(sapply(1:(length(params)/2),
+  #                     function(x) {
+  #                       paste(params[2*(x-1)+1], params[2*x], sep="=")
+  #                     }),
+  #                    collapse=", ")
+  plotTitle <- paste(100*as.numeric(params[6]), "% same direction,",
+                     100*as.numeric(params[8]), "% diff. direction")
+  histPlot <- ggplot(subset(allDat, allDat$stat==x), aes(value)) +
+    geom_histogram(data=subset(allDat, allDat$type=="permutation"),
+                   binwidth=0.05, fill="blue", alpha=0.5) +
+    geom_dotplot(data=subset(allDat, allDat$type=="simulation"),
+                 binwidth=0.05, fill="red", alpha=0.5) +
+    ggtitle(plotTitle) + xlab("") +
+    facet_grid(.~stat) + theme_bw()
+  pvaluePlot <- ggplot(melt(allPvalues), aes(variable, value)) +
+    geom_violin(fill="green", alpha=0.2) + xlab("") + ylab("pvalues") +
+    theme_bw()
+  grid.arrange(histPlot, pvaluePlot, nrow=2)
 }
 
-plotResults(p1_0.2_p2_0.05_p3_0)
-plotResults(p1_0.2_p2_0.05_p3_0.5)
-plotResults(p1_0.2_p2_0.05_p3_1)
+plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
+plotResults(p1_0.05_p2_0.05_p3_0_p4_0.5)
+plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
+plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0.5)
+plotResults(p1_0.05_p2_0.05_p3_0_p4_1)
+plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
