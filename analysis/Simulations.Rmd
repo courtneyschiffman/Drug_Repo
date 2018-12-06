@@ -3,3 +3,81 @@ title: "Simulations"
 output: html_document
 ---
 
+# Simulations
+
+# Round 1: 100 simulations, 1000 permutations per simulation
+
+```{r sim1, echo=FALSE, message=FALSE}
+source("./code/plotResults.R")
+
+# load results files
+resultsFiles <- grep("noidr", list.files("./data"), value=T)
+for(x in resultsFiles) { load(paste0("./data/", x)) }
+```
+
+Parameters: 
+
+* proportion differentially expressed in drug signature (p1): 0.05
+* proportion differentially expressed in disease signature (p2): 0.05
+* proportion differentially expressed in same direction (p3): 0, 0.5, 1
+* proportion differentially expressed in different direction (p4): 0, 0.5, 1
+
+Statistics: GSEA, IDR correlation, Spearman correlation, truncated Spearman correlation
+
+Figure legends:
+
+* Blue histogram: permutation statistics
+
+* Red dots: simulation statistics
+
+* Green violin plots: simulation p-values
+  
+```{r sim1Plots, echo=FALSE, message=FALSE, fig.cap=""}
+plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
+plotResults(p1_0.05_p2_0.05_p3_0_p4_0.5)
+plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
+plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0.5)
+plotResults(p1_0.05_p2_0.05_p3_0_p4_1)
+plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
+```
+
+# Round 2: 5 simulations, 1000 permutations per simulation
+
+```{r sim2, echo=FALSE, message=FALSE}
+rm(list=ls())
+
+source("./code/plotResults.R")
+
+newResults <- grep("noidr", grep("p4", list.files("./data"), value=T), invert=T, value=T)
+for(x in newResults) { load(paste0("./data/", x)) }
+
+# load results files
+resultsFiles <- grep("noidr", list.files("./data"), value=T)
+for(x in resultsFiles) { load(paste0("./data/", x)) }
+```
+
+Parameters: 
+
+* proportion differentially expressed in drug signature (p1): 0.05
+* proportion differentially expressed in disease signature (p2): 0.05
+* proportion differentially expressed in same direction (p3): 0, 0.5, 1
+* proportion differentially expressed in different direction (p4): 0, 0.5, 1
+
+Statistics: GSEA, Spearman correlation, truncated Spearman correlation
+
+Figure legends:
+
+* Blue histogram: permutation statistics
+
+* Red dots: simulation statistics
+
+* Green violin plots: simulation p-values
+
+```{r sim2Plots, echo=FALSE, message=FALSE, fig.cap=""}
+plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
+plotResults(p1_0.05_p2_0.05_p3_0_p4_0.5)
+plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
+# plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0.5)
+# plotResults(p1_0.05_p2_0.05_p3_0_p4_1)
+# plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
+```

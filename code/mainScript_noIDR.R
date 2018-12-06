@@ -15,8 +15,8 @@ library(iterators)
 nSim <- 100 # number of simulations to perform
 nPerm <- 1000 # number of permutations to perform
 deg <- 49 # degrees of freedom to simulate from
-# nCores <- parallel::detectCores() # number of clusters to use for makeCluster()
-nCores <- 3
+nCores <- parallel::detectCores() # number of clusters to use for makeCluster()
+# nCores <- 3
 
 ## source script files
 helperFuns <- c("assessSig",
