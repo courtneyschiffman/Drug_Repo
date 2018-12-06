@@ -42,37 +42,42 @@ plotResults <- function(permResults) {
                    binwidth=0.05, fill="blue", alpha=0.5) +
     geom_dotplot(data=subset(allDat, allDat$type=="simulation"),
                  binwidth=0.05, fill="red", alpha=0.5,
-                 dotsize=ifelse(nStats==3, 1, 2)) +
+                 dotsize=ifelse(nStats==3, 0.75, 2)) +
     ggtitle(plotTitle) + xlab("") +
     facet_grid(.~stat) + theme_bw()
-  if(nStats == 3) {
-    pvaluePlot <- ggplot(melt(allPvalues), aes(variable, value)) +
-      geom_violin(fill="green", alpha=0.2) + xlab("") + ylab("pvalues") +
-      theme_bw()
-  }
-  if(nStats ==4) {
-    pvaluePlot <- ggplot(melt(allPvalues), aes(variable, value)) +
-    geom_dotplot(binaxis="y", stackdir="center") + xlab("") + ylab("pvalues") +
-    theme_bw()
-  }
+  # if(nStats == 3) {
+  #   pvaluePlot <- ggplot(melt(allPvalues), aes(variable, value)) +
+  #     geom_violin(fill="green", alpha=0.2) + xlab("") + ylab("pvalues") +
+  #     theme_bw()
+  # }
+  # if(nStats ==4) {
+  #   pvaluePlot <- ggplot(melt(allPvalues), aes(variable, value)) +
+  #   geom_dotplot(binaxis="y", stackdir="center") + xlab("") + ylab("pvalues") +
+  #   theme_bw()
+  # }
+  volcanoDat <- cbind(melt(allPvalues), melt(allStats)$value)
+  colnames(volcanoDat) <- c("stat", "pvalue", "value")
+  pvaluePlot <- ggplot(volcanoDat, aes(value, pvalue)) + geom_jitter(colour="red", alpha=0.5) +
+    geom_hline(yintercept=0) + geom_vline(xintercept=0) +
+    theme_bw() + facet_grid(.~stat) + xlab("statistic")
   grid.arrange(histPlot, pvaluePlot, nrow=2)
 }
 
-# load results files
-resultsFiles <- grep("noidr", list.files("./data"), value=T)
-for(x in resultsFiles) { load(paste0("./data/", x)) }
-
-plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
-plotResults(p1_0.05_p2_0.05_p3_0_p4_0.5)
-plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
-plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0.5)
-plotResults(p1_0.05_p2_0.05_p3_0_p4_1)
-plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
-
+# # load results files
+# resultsFiles <- grep("noidr", list.files("./data"), value=T)
+# for(x in resultsFiles) { load(paste0("./data/", x)) }
+#
+# plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
+# plotResults(p1_0.05_p2_0.05_p3_0_p4_0.5)
+# plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
+# plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0.5)
+# plotResults(p1_0.05_p2_0.05_p3_0_p4_1)
+# plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
+#
 ## new results w/ idr
-newResults <- grep("noidr", grep("p4", list.files("./data"), value=T), invert=T, value=T)
-for(x in newResults) { load(paste0("./data/", x)) }
-
-plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
-plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
-plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
+# newResults <- grep("noidr", grep("p4", list.files("./data"), value=T), invert=T, value=T)
+# for(x in newResults) { load(paste0("./data/", x)) }
+#
+# plotResults(p1_0.05_p2_0.05_p3_0_p4_0)
+# plotResults(p1_0.05_p2_0.05_p3_0.5_p4_0)
+# plotResults(p1_0.05_p2_0.05_p3_1_p4_0)
